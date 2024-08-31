@@ -21,6 +21,8 @@ class MotionService {
 
     void begin();
 
+    static void _loopImpl(void *_this) { static_cast<MotionService *>(_this)->_loop(); }
+
   private:
     PsychicHttpServer *_server;
     EventSocket *_socket;
@@ -64,6 +66,4 @@ class MotionService {
     bool update_angles(const float new_angles[12], float angles[12], bool useLerp = true);
 
     void _loop();
-
-    static void _loopImpl(void *_this) { static_cast<MotionService *>(_this)->_loop(); }
 };

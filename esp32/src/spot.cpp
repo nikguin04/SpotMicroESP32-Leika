@@ -18,6 +18,7 @@ Spot::~Spot() {}
 void Spot::beginAsync() {
     begin();
     g_task_manager.createTask(this->_loopImpl, "Spot main", 4096, this, 2, NULL);
+    g_task_manager.createTask(_motionService._loopImpl, "MotionService", 4096, &_motionService, 3);
 }
 
 void Spot::begin() {

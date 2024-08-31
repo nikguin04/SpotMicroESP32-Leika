@@ -16,8 +16,6 @@ void MotionService::begin() {
                          std::bind(&MotionService::syncAngles, this, std::placeholders::_1, std::placeholders::_2));
 
     body_state.updateFeet(default_feet_positions);
-
-    g_task_manager.createTask(this->_loopImpl, "MotionService", 4096, this, 3);
 }
 
 void MotionService::anglesEvent(JsonObject &root, int originId) {
