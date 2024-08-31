@@ -21,19 +21,7 @@ struct body_state_t {
 
 class Kinematics {
   private:
-    float Trb[4][4] = {
-        0,
-    };
-    float Trf[4][4] = {
-        0,
-    };
-    float Tlb[4][4] = {
-        0,
-    };
-    float Tlf[4][4] = {
-        0,
-    };
-
+    float Trb[4][4], Trf[4][4], Tlb[4][4], Tlf[4][4];
     const float Ix[4][4] = {{-1, 0, 0, 0}, {0, 1, 0, 0}, {0, 0, 1, 0}, {0, 0, 0, 1}};
     float inv[4][4];
     float point[4];
