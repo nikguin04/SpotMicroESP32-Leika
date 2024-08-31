@@ -6,13 +6,6 @@ FeaturesService::FeaturesService() {}
 FeaturesService::~FeaturesService() {}
 
 void FeaturesService::features(JsonObject &root) {
-    root["security"] = USE_SECURITY;
-    root["ntp"] = USE_NTP;
-    root["upload_firmware"] = USE_UPLOAD_FIRMWARE;
-    root["download_firmware"] = USE_DOWNLOAD_FIRMWARE;
-    root["sleep"] = USE_SLEEP;
-    root["battery"] = USE_BATTERY;
-    root["analytics"] = USE_ANALYTICS;
     root["camera"] = USE_CAMERA;
     root["imu"] = USE_IMU;
     root["mag"] = USE_MAG;
