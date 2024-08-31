@@ -9,8 +9,6 @@
 #include <timing.h>
 #include <utilities/math_utilities.h>
 
-#define DEFAULT_STATE false
-#define LIGHT_SETTINGS_ENDPOINT_PATH "/api/input"
 #define ANGLES_EVENT "angles"
 #define INPUT_EVENT "input"
 #define POSITION_EVENT "position"

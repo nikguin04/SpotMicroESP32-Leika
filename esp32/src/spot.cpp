@@ -38,9 +38,6 @@ void Spot::startServices() {
     _motionService.begin();
     _peripherals.begin();
     _servoController.begin();
-    // _batteryService.begin();
-    //_authenticationService.begin();
-    //_firmwareService.begin();
 }
 
 void IRAM_ATTR Spot::_loop() {
@@ -55,7 +52,6 @@ void IRAM_ATTR Spot::loop() {
     _wifiService.loop();
     _apService.loop();
     _ledService.loop();
-    // _batteryService.loop();
     _peripherals.loop();
 
     EXECUTE_EVERY_N_MS(500, {
