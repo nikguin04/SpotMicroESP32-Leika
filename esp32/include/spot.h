@@ -33,8 +33,6 @@ class Spot {
     ServoController _servoController;
     Peripherals _peripherals;
 
-    JsonDocument doc;
-    char message[2000];
     const char *name = "spot-micro";
 
   protected:

@@ -54,15 +54,6 @@ void IRAM_ATTR Spot::loop() {
     _apService.loop();
     _ledService.loop();
     _peripherals.loop();
-
-    EXECUTE_EVERY_N_MS(500, {
-        if (!_socket.hasSubscribers("analytics")) return;
-        doc.clear();
-        JsonObject jsonObject = doc.to<JsonObject>();
-        _systemService.metrics(jsonObject);
-        serializeJson(doc, message);
-        _socket.emit("analytics", message);
-    });
 }
 
 } // namespace spot

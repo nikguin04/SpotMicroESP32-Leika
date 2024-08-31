@@ -122,8 +122,6 @@ void WebServer::begin() {
     ESP_LOGI(TAG, "Finished registering endpoints");
 }
 
-void WebServer::loop() {}
-
 void WebServer::addHeaders() {
 #ifdef ENABLE_CORS
     DefaultHeaders::Instance().addHeader("Access-Control-Allow-Origin", CORS_ORIGIN);
@@ -137,6 +135,23 @@ void WebServer::addHeaders() {
     });
 #endif
     DefaultHeaders::Instance().addHeader("Server", "Spot micro");
+}
+
+void WebServer::loop() {
+    EXECUTE_EVERY_N_MS(500, {
+        if (!_socket->hasSubscribers("analytics")) return;
+        doc.clear();
+        JsonObject jsonObject = doc.to<JsonObject>();
+        _systemService->metrics(jsonObject);
+        serializeJson(doc, message);
+        _socket->emit("analytics", message);
+    });
+
+    EXECUTE_EVERY_N_MS(200, {
+        char buffer[8];
+        snprintf(buffer, sizeof(buffer), "%d", WiFi.RSSI());
+        _socket->emit("rssi", buffer);
+    });
 }
 
 } // namespace spot

@@ -23,9 +23,13 @@ class WebServer {
     APService *_apService;
     EventSocket *_socket;
     camera::CameraService *_cameraService;
+
     constexpr static u_int16_t _numberEndpoints = 130;
     constexpr static u_int32_t _maxFileUpload = 2300000; // 2.3 MB
     constexpr static uint16_t _port = 80;
+
+    JsonDocument doc;
+    char message[2000];
 
     void addHeaders();
 
