@@ -1,6 +1,7 @@
 #ifndef Peripherals_h
 #define Peripherals_h
 
+#include <features.h>
 #include <event_socket.h>
 #include <domain/stateful_service_template.h>
 #include <domain/stateful_service_persistence.h>
