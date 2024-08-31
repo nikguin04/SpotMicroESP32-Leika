@@ -27,10 +27,10 @@
 #endif
 
 #ifndef ARDUINO_VERSION
-#ifndef STRINGIZE
-#define STRINGIZE(s) #s
+#ifndef STRINGIFY
+#define STRINGIFY(s) #s
 #endif
-#define ARDUINO_VERSION_STR(major, minor, patch) "v" STRINGIZE(major) "." STRINGIZE(minor) "." STRINGIZE(patch)
+#define ARDUINO_VERSION_STR(major, minor, patch) "v" STRINGIFY(major) "." STRINGIFY(minor) "." STRINGIFY(patch)
 #define ARDUINO_VERSION \
     ARDUINO_VERSION_STR(ESP_ARDUINO_VERSION_MAJOR, ESP_ARDUINO_VERSION_MINOR, ESP_ARDUINO_VERSION_PATCH)
 #endif
