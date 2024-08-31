@@ -7,8 +7,6 @@
 #include <map>
 #include <vector>
 
-#define EVENT_SERVICE_PATH "/ws/events"
-
 enum message_type_t { CONNECT = 0, DISCONNECT = 1, EVENT = 2, PING = 3, PONG = 4, BINARY_EVENT = 5 };
 
 typedef std::function<void(JsonObject &root, int originId)> EventCallback;
