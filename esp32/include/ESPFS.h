@@ -11,5 +11,6 @@
 #define CAMERA_SETTINGS_FILE "/config/cameraSettings.json"
 #define NTP_SETTINGS_FILE "/config/ntpSettings.json"
 #define WIFI_SETTINGS_FILE "/config/wifiSettings.json"
+#define AP_SETTINGS_FILE "/config/apSettings.json"
 
 #endif
