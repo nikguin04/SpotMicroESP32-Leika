@@ -29,4 +29,16 @@
         }                                                                                   \
     }
 
+#define COUNT_CALLS_PER_SECOND(func)               \
+    static unsigned long lastMillis = 0;           \
+    static unsigned long callCount = 0;            \
+    callCount++;                                   \
+    if (millis() - lastMillis >= 1000) {           \
+        Serial.print(#func " calls per second: "); \
+        Serial.println(callCount);                 \
+        callCount = 0;                             \
+        lastMillis = millis();                     \
+    }                                              \
+    func;
+
 #endif
