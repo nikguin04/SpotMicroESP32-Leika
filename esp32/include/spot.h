@@ -20,7 +20,6 @@ namespace spot {
 class Spot {
   private:
     PsychicHttpServer *_server;
-    FS *_fs {&ESPFS};
     WebServer _webserver;
     WiFiService _wifiService;
     APService _apService;
