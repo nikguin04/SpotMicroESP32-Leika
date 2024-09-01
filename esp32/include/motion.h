@@ -3,7 +3,7 @@
 #include <event_socket.h>
 #include <task_manager.h>
 #include <utilities/kinematics.h>
-#include <services/peripherals/servo.h>
+#include <peripherals/servo.h>
 #include <utilities/gait_utilities.h>
 #include <timing.h>
 #include <utilities/math_utilities.h>

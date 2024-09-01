@@ -9,9 +9,9 @@
 
 #include <event_socket.h>
 
-#include <services/peripherals/led_service.h>
-#include <services/peripherals/peripherals.h>
-#include <services/peripherals/servo.h>
+#include <peripherals/led_service.h>
+#include <peripherals/peripherals.h>
+#include <peripherals/servo.h>
 
 #include <motion.h>
 

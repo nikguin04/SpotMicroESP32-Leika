@@ -1,4 +1,4 @@
-#include <services/peripherals/peripherals.h>
+#include <peripherals/peripherals.h>
 
 Peripherals::Peripherals(PsychicHttpServer *server, EventSocket *socket)
     : _server(server),

@@ -8,7 +8,7 @@
 #include <domain/stateful_service_persistence.h>
 #include <domain/stateful_service_endpoint.h>
 #include <utilities/math_utilities.h>
-#include <services/peripherals/peripherals.h>
+#include <peripherals/peripherals.h>
 #include <timing.h>
 
 #define EVENT_SERVO_CONFIGURATION_SETTINGS "servoPWM"

@@ -1,4 +1,4 @@
-#include <services/peripherals/led_service.h>
+#include <peripherals/led_service.h>
 
 LEDService::LEDService() {
     FastLED.addLeds<CHIPSET, WS2812_PIN, COLOR_ORDER>(leds, WS2812_NUM_LEDS).setCorrection(TypicalLEDStrip);
