@@ -13,6 +13,13 @@
 #include <peripherals/peripherals.h>
 #include <peripherals/servo.h>
 
+#include <peripherals/sensor.h>
+#include <peripherals/mpu6050.h>
+#include <peripherals/bmp085.h>
+#include <peripherals/hmc5883.h>
+#include <peripherals/i2c.h>
+#include <peripherals/pca9685.h>
+
 #include <motion.h>
 
 namespace spot {

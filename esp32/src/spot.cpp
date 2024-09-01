@@ -1,6 +1,7 @@
 #include <spot.h>
 
 TaskManager g_task_manager;
+SensorManager sensorManager;
 
 namespace spot {
 
@@ -25,6 +26,34 @@ void Spot::begin() {
     ESPFS.begin(true);
     g_task_manager.begin();
     startServices();
+
+#ifdef USE_IMU
+    sensorManager.addSensor<MPU6050Sensor>();
+#endif
+
+#ifdef USE_BMP
+    sensorManager.addSensor<BMP085Sensor>();
+#endif
+
+#ifdef ENABLE_PCA9685
+    sensorManager.addSensor<PCA9685Sensor>();
+#endif
+
+#ifdef ENABLE_ADS1115
+    sensorManager.addSensor<ADS1115Sensor>();
+#endif
+
+#ifdef USE_MAG
+    sensorManager.addSensor<HMC5883Sensor>();
+#endif
+
+#ifdef USE_SERVO
+    sensorManager.addSensor<PCA9685Sensor>();
+#endif
+
+    sensorManager.addSensor<I2CSensor>();
+
+    sensorManager.initializeAll();
 }
 
 void Spot::startServices() {
@@ -53,7 +82,7 @@ void IRAM_ATTR Spot::loop() {
     _wifiService.loop();
     _apService.loop();
     _ledService.loop();
-    _peripherals.loop();
+    EXECUTE_EVERY_N_MS(200, sensorManager.updateAll());
 }
 
 } // namespace spot
