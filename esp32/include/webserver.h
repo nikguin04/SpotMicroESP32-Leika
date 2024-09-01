@@ -7,6 +7,12 @@
 #include <services/ntp/ntp_service.h>
 #include <services/camera/camera_service.h>
 
+#include <peripherals/sensor.h>
+#include <peripherals/mpu6050.h>
+#include <peripherals/bmp085.h>
+#include <peripherals/hmc5883.h>
+#include <peripherals/i2c.h>
+
 #include <event_socket.h>
 #include <WWWData.h>
 
@@ -32,6 +38,11 @@ class WebServer {
     char message[2000];
 
     void addHeaders();
+
+    void emitAnalytics();
+    void emitIMU();
+    void emitRSSI();
+    void emitI2C();
 
   public:
     WebServer(PsychicHttpServer *server, WiFiService *wifiService, APService *apService, EventSocket *socket,

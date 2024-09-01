@@ -138,20 +138,59 @@ void WebServer::addHeaders() {
 }
 
 void WebServer::loop() {
-    EXECUTE_EVERY_N_MS(500, {
-        if (!_socket->hasSubscribers("analytics")) return;
-        doc.clear();
-        JsonObject jsonObject = doc.to<JsonObject>();
-        _systemService->metrics(jsonObject);
-        serializeJson(doc, message);
-        _socket->emit("analytics", message);
-    });
-
-    EXECUTE_EVERY_N_MS(200, {
-        char buffer[8];
-        snprintf(buffer, sizeof(buffer), "%d", WiFi.RSSI());
-        _socket->emit("rssi", buffer);
-    });
+    EXECUTE_EVERY_N_MS(500, emitAnalytics());
+    EXECUTE_EVERY_N_MS(425, emitIMU());
+    EXECUTE_EVERY_N_MS(225, emitRSSI());
+    EXECUTE_EVERY_N_MS(1000, emitI2C());
 }
 
+void WebServer::emitAnalytics() {
+    if (!_socket->hasSubscribers("analytics")) return;
+    doc.clear();
+    JsonObject jsonObject = doc.to<JsonObject>();
+    _systemService->metrics(jsonObject);
+    serializeJson(doc, message);
+    _socket->emit("analytics", message);
+}
+
+void WebServer::emitIMU() {
+    if (!_socket->hasSubscribers("imu")) return;
+    doc.clear();
+    JsonObject root = doc.to<JsonObject>();
+#ifdef USE_IMU
+    if (auto mpu6050 = sensorManager.getSensor<MPU6050Sensor>()) {
+        mpu6050->populateJson(root);
+    }
+#endif
+#ifdef USE_BMP
+    if (auto bmp085 = sensorManager.getSensor<BMP085Sensor>()) {
+        bmp085->populateJson(root);
+    }
+#endif
+#ifdef USE_MAG
+    if (auto hmc5883 = sensorManager.getSensor<HMC5883Sensor>()) {
+        hmc5883->populateJson(root);
+    }
+#endif
+    serializeJson(doc, message);
+    _socket->emit("imu", message);
+}
+
+void WebServer::emitRSSI() {
+    if (!_socket->hasSubscribers("rssi")) return;
+    char buffer[8];
+    snprintf(buffer, sizeof(buffer), "%d", WiFi.RSSI());
+    _socket->emit("rssi", buffer);
+}
+
+void WebServer::emitI2C() {
+    if (!_socket->hasSubscribers("i2cScan")) return;
+    doc.clear();
+    JsonObject jsonObject = doc.to<JsonObject>();
+    if (auto i2c = sensorManager.getSensor<I2CSensor>()) {
+        i2c->populateJson(jsonObject);
+        serializeJson(doc, message);
+        _socket->emit("i2cScan", message);
+    }
+}
 } // namespace spot
