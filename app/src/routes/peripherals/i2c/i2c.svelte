@@ -15,11 +15,9 @@
 
     let active_devices:I2CDevice[] = [];
 
-    onMount(() => {
-        socket.on('i2cScan', handleScan);
-        socket.sendEvent('i2cScan', "");
-        return () => socket.off('i2cScan', handleScan);
-    })
+    onMount(() => socket.on('i2cScan', handleScan));
+
+    onDestroy(() => socket.off('i2cScan', handleScan));
 
     const handleScan = (data: any) => {
         active_devices = data.addresses.map((address:number) => i2cDevices.find(device => device.address === address))
