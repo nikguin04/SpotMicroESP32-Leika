@@ -17,7 +17,6 @@
 #include <MPU6050_6Axis_MotionApps612.h>
 #include <Adafruit_PWMServoDriver.h>
 #include <Adafruit_BMP085_U.h>
-#include <Adafruit_HMC5883_U.h>
 #include <Adafruit_Sensor.h>
 #include <Adafruit_ADS1X15.h>
 #include <NewPing.h>
@@ -26,23 +25,10 @@
 #define EVENT_CONFIGURATION_SETTINGS "peripheralSettings"
 #define CONFIGURATION_SETTINGS_PATH "/api/peripheral/settings"
 
-#define EVENT_I2C_SCAN "i2cScan"
-
 #define I2C_INTERVAL 5000
 #define MAX_ESP_IMU_SIZE 500
 #define EVENT_IMU "imu"
 #define EVENT_SERVO_STATE "servoState"
-
-/*
- * Servo Settings
- */
-#ifndef FACTORY_SERVO_PWM_FREQUENCY
-#define FACTORY_SERVO_PWM_FREQUENCY 50
-#endif
-
-#ifndef FACTORY_SERVO_OSCILLATOR_FREQUENCY
-#define FACTORY_SERVO_OSCILLATOR_FREQUENCY 27000000
-#endif
 
 /*
  * OLED Settings
@@ -110,50 +96,10 @@ class Peripherals : public StatefulService<PeripheralsConfiguration> {
 
     void updatePins();
 
-    void emitI2C(const String &originId = "", bool sync = false);
-
-    void scanI2C(uint8_t lower = 1, uint8_t higher = 127);
-
-    /* SERVO FUNCTIONS*/
-    void pcaLerpTo(int index, int value, float t);
-
-    void pcaWrite(int index, int value);
-
-    void pcaWriteAngle(int index, int angle);
-
-    void pcaWriteAngles(float *angles, int numServos, int offset = 0);
-
-    void pcaActivate();
-
-    void pcaDeactivate();
-
     /* ADC FUNCTIONS*/
     int16_t readADCVoltage(uint8_t channel);
 
-    /* IMU FUNCTIONS */
-    bool readIMU();
-
-    float getTemp();
-
-    float getAngleX();
-
-    float getAngleY();
-
-    float getAngleZ();
-
-    /* MAG FUNCTIONS */
-    float getHeading();
-
-    /* BMP FUNCTIONS */
-    float getAltitude();
-
-    float getPressure();
-
-    float getTemperature();
-
   protected:
-    void updateImu();
-
     void readSonar();
 
     void emitSonar();
@@ -176,30 +122,6 @@ class Peripherals : public StatefulService<PeripheralsConfiguration> {
     JsonDocument doc;
     char message[MAX_ESP_IMU_SIZE];
 
-#if FT_ENABLED(USE_SERVO)
-    Adafruit_PWMServoDriver _pca;
-    bool _pca_active {false};
-    uint16_t pwm[16] = {0};
-    uint16_t target_pwm[16] = {0};
-#endif
-#if FT_ENABLED(USE_IMU)
-    MPU6050 _imu;
-    bool imu_success {false};
-    uint8_t devStatus {false};
-    Quaternion q;
-    uint8_t fifoBuffer[64];
-    VectorFloat gravity;
-    float ypr[3];
-    float imu_temperature {-1};
-#endif
-#if FT_ENABLED(USE_MAG)
-    Adafruit_HMC5883_Unified _mag;
-    bool mag_success {false};
-#endif
-#if FT_ENABLED(USE_BMP)
-    Adafruit_BMP085_Unified _bmp;
-    bool bmp_success {false};
-#endif
 #if FT_ENABLED(FT_ADS1015)
     Adafruit_ADS1015 _ads;
 #endif
@@ -213,9 +135,7 @@ class Peripherals : public StatefulService<PeripheralsConfiguration> {
     float _left_distance {MAX_DISTANCE};
     float _right_distance {MAX_DISTANCE};
 
-    std::list<uint8_t> addressList;
     bool i2c_active = false;
-    unsigned long _updateInterval {I2C_INTERVAL};
 };
 
 #endif
