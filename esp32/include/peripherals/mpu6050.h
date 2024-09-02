@@ -50,9 +50,9 @@ class MPU6050Sensor : public Sensor {
     float getRoll() const { return ypr[2]; }
 
     void populateJson(JsonObject& root) override {
-        root["x"] = getYaw();
-        root["y"] = getPitch();
-        root["z"] = getRoll();
+        root["x"] = round2(getYaw());
+        root["y"] = round2(getPitch());
+        root["z"] = round2(getRoll());
     }
 
     void printData() const {
