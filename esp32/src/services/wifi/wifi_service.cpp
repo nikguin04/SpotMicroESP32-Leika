@@ -126,8 +126,8 @@ void WiFiService::connectToWiFi() {
         ESP_LOGI("WiFiSettingsService", "%d networks found.", scanResult);
 
         // find the best network to connect
-        wifi_settings_t *bestNetwork = NULL;
-        int bestNetworkDb = FACTORY_WIFI_RSSI_THRESHOLD;
+        wifi_settings_t *bestNetwork = nullptr;
+        int32_t bestNetworkDb = FACTORY_WIFI_RSSI_THRESHOLD;
 
         for (int i = 0; i < scanResult; ++i) {
             String ssid_scan;
@@ -137,24 +137,21 @@ void WiFiService::connectToWiFi() {
             int32_t chan_scan;
 
             WiFi.getNetworkInfo(i, ssid_scan, sec_scan, rssi_scan, BSSID_scan, chan_scan);
-            ESP_LOGV("WiFiSettingsService", "SSID: %s, RSSI: %d dbm", ssid_scan.c_str(), rssi_scan);
 
             for (auto &network : _state.wifiSettings) {
-                if (ssid_scan == network.ssid) {     // SSID match
-                    if (rssi_scan > bestNetworkDb) { // best network
-                        bestNetworkDb = rssi_scan;
-                        bestNetwork = &network;
-                        network.available = true;
-                    } else if (rssi_scan >= FACTORY_WIFI_RSSI_THRESHOLD) { // available network
+                if (ssid_scan == network.ssid) {
+                    if (rssi_scan >= FACTORY_WIFI_RSSI_THRESHOLD) {
                         network.available = true;
                     }
+                    if (rssi_scan > bestNetworkDb) {
+                        bestNetworkDb = rssi_scan;
+                        bestNetwork = &network;
+                    }
                 }
-                break;
             }
         }
 
-        // if configured to prioritize signal strength, use the best network else use the first available network
-        if (_state.priorityBySignalStrength == false) {
+        if (!_state.priorityBySignalStrength) {
             for (auto &network : _state.wifiSettings) {
                 if (network.available == true) {
                     ESP_LOGI("WiFiSettingsService", "Connecting to first available network: %s", network.ssid.c_str());
@@ -162,12 +159,11 @@ void WiFiService::connectToWiFi() {
                     break;
                 }
             }
-        } else if (_state.priorityBySignalStrength == true && bestNetwork) {
+        } else if (_state.priorityBySignalStrength && bestNetwork) {
             ESP_LOGI("WiFiSettingsService", "Connecting to strongest network: %s", bestNetwork->ssid.c_str());
             configureNetwork(*bestNetwork);
             WiFi.begin(bestNetwork->ssid.c_str(), bestNetwork->password.c_str());
-        } else // no suitable network to connect
-        {
+        } else {
             ESP_LOGI("WiFiSettingsService", "No known networks found.");
         }
 
