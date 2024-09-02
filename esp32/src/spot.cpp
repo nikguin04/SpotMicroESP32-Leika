@@ -78,7 +78,6 @@ void IRAM_ATTR Spot::loop() {
     _wifiService.loop();
     _apService.loop();
     _ledService.loop();
-    EXECUTE_EVERY_N_MS(200, sensorManager.updateAll());
 }
 
 } // namespace spot
