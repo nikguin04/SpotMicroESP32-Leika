@@ -159,16 +159,19 @@ void WebServer::emitIMU() {
     JsonObject root = doc.to<JsonObject>();
 #ifdef USE_IMU
     if (auto mpu6050 = sensorManager.getSensor<MPU6050Sensor>()) {
+        mpu6050->update();
         mpu6050->populateJson(root);
     }
 #endif
 #ifdef USE_BMP
     if (auto bmp085 = sensorManager.getSensor<BMP085Sensor>()) {
+        bmp085->update();
         bmp085->populateJson(root);
     }
 #endif
 #ifdef USE_MAG
     if (auto hmc5883 = sensorManager.getSensor<HMC5883Sensor>()) {
+        hmc5883->update();
         hmc5883->populateJson(root);
     }
 #endif
@@ -188,6 +191,7 @@ void WebServer::emitI2C() {
     doc.clear();
     JsonObject jsonObject = doc.to<JsonObject>();
     if (auto i2c = sensorManager.getSensor<I2CSensor>()) {
+        i2c->update();
         i2c->populateJson(jsonObject);
         serializeJson(doc, message);
         _socket->emit("i2cScan", message);
