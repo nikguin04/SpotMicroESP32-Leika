@@ -8,7 +8,7 @@ LEDService::LEDService() {
 
 LEDService::~LEDService() {}
 
-void LEDService::begin() {}
+void LEDService::begin() { loop(); }
 
 void LEDService::loop() {
     EXECUTE_EVERY_N_MS(1000 / 60, {
@@ -16,16 +16,17 @@ void LEDService::loop() {
         if (_brightness <= 50) direction = 5;
         _brightness += direction;
         if (WiFi.isConnected()) {
-            fillFromPallette(OceanColors_p, 0);
+            CRGB color = ColorFromPalette(ForestColors_p, 0, _brightness, currentBlending);
+            fillColor(color);
         } else {
-            fillFromPallette(ForestColors_p, 128);
+            CRGB color = ColorFromPalette(OceanColors_p, 0, _brightness, currentBlending);
+            fillColor(color);
         }
         FastLED.show();
     });
 }
 
-void LEDService::fillFromPallette(CRGBPalette16 colorPalette, uint8_t colorIndex) {
-    CRGB color = ColorFromPalette(colorPalette, colorIndex, _brightness, currentBlending);
+void LEDService::fillColor(CRGB color) {
     for (int i = 0; i < WS2812_NUM_LEDS; ++i) {
         leds[i] = color;
     }

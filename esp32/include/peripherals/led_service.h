@@ -24,7 +24,7 @@ class LEDService {
     int _brightness = 255;
     int direction = 1;
 
-    void fillFromPallette(CRGBPalette16 colorPalette, uint8_t colorIndex);
+    void fillColor(CRGB color);
 
   public:
     LEDService();
