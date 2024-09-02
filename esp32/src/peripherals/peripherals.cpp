@@ -34,7 +34,6 @@ void Peripherals::begin() {
 void Peripherals::loop() {
     EXECUTE_EVERY_N_MS(200, {
         beginTransaction();
-        updateImu();
         readSonar();
         emitSonar();
         endTransaction();

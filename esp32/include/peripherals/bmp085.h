@@ -26,10 +26,13 @@ class BMP085Sensor : public Sensor {
     }
 
     void update() override {
+        if (!is_active) return;
+        acquireI2CLock();
         bmp.getTemperature(&temperature);
         bmp.getEvent(&event);
         pressure = event.pressure;
         altitude = bmp.pressureToAltitude(seaLevelPressure, event.pressure);
+        releaseI2CLock();
     }
 
     const char* getName() const override { return "BMP085"; }

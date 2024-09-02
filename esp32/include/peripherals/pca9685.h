@@ -32,6 +32,7 @@ class PCA9685Sensor : public Sensor {
         pwm.setPWMFreq(FACTORY_SERVO_PWM_FREQUENCY);
         pwm.setOscillatorFrequency(FACTORY_SERVO_OSCILLATOR_FREQUENCY);
         pwm.sleep();
+        is_active = true;
     }
 
     void update() override {}
@@ -39,6 +40,7 @@ class PCA9685Sensor : public Sensor {
     const char* getName() const override { return "PCA9685"; }
 
     void setPWM(uint8_t channel, uint16_t value) {
+        if (!is_active) return;
         if (value < 0 || value > 4096) {
             ESP_LOGE("PCA9685", "Invalid PWM value %d for %d :: Valid range 0-4096", value, channel);
             return;
@@ -47,18 +49,26 @@ class PCA9685Sensor : public Sensor {
             ESP_LOGE("PCA9685", "Invalid channel id %d :: Valid range 0-16", channel);
             return;
         }
+        acquireI2CLock();
         pwm.setPWM(channel, 0, value);
+        releaseI2CLock();
         lastSetValues[channel] = value;
     }
 
     void deactivate() {
+        if (!is_active) return;
         sleeping = true;
+        acquireI2CLock();
         pwm.sleep();
+        releaseI2CLock();
     }
 
     void activate() {
+        if (!is_active) return;
         sleeping = false;
+        acquireI2CLock();
         pwm.wakeup();
+        releaseI2CLock();
     }
 
     bool isActive() const { return sleeping; }

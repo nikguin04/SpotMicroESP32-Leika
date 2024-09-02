@@ -6,6 +6,18 @@
 #include <memory>
 
 #include <ArduinoJson.h>
+#include <utilities/math_utilities.h>
+
+class I2CSemaphore {
+  public:
+    static inline SemaphoreHandle_t semaphore;
+
+    static void initialize() { semaphore = xSemaphoreCreateMutex(); }
+
+    static void take() { xSemaphoreTake(semaphore, portMAX_DELAY); }
+
+    static void give() { xSemaphoreGive(semaphore); }
+};
 
 class Sensor {
   public:
@@ -14,6 +26,11 @@ class Sensor {
     virtual void update() = 0;
     virtual const char* getName() const = 0;
     virtual void populateJson(JsonObject& root) = 0;
+
+  protected:
+    void acquireI2CLock() { I2CSemaphore::take(); }
+
+    void releaseI2CLock() { I2CSemaphore::give(); }
 };
 
 class DerivedSensor : public Sensor {
@@ -27,6 +44,8 @@ class SensorManager {
     std::vector<std::unique_ptr<DerivedSensor>> derivedSensors_;
 
   public:
+    SensorManager() { I2CSemaphore::initialize(); }
+
     template <typename T, typename... Args>
     T& addSensor(Args&&... args) {
         auto sensor = std::make_unique<T>(std::forward<Args>(args)...);
@@ -59,15 +78,18 @@ class SensorManager {
     }
 
     void initializeAll() {
+        I2CSemaphore::take();
         for (auto& sensor : sensors_) {
             sensor->initialize();
         }
         for (auto& sensor : derivedSensors_) {
             sensor->initialize();
         }
+        I2CSemaphore::give();
     }
 
     void updateAll() {
+        I2CSemaphore::take();
         for (auto& sensor : sensors_) {
             sensor->update();
         }
@@ -75,6 +97,7 @@ class SensorManager {
             sensor->update();
             sensor->updateDerived();
         }
+        I2CSemaphore::give();
     }
 
     void printSensorNames() {

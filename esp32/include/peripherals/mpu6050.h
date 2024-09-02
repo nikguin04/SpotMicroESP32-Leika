@@ -35,10 +35,12 @@ class MPU6050Sensor : public Sensor {
 
     void update() override {
         if (!is_active) return;
+        acquireI2CLock();
         newData = mpu.dmpGetCurrentFIFOPacket(fifoBuffer);
         mpu.dmpGetQuaternion(&q, fifoBuffer);
         mpu.dmpGetGravity(&gravity, &q);
         mpu.dmpGetYawPitchRoll(ypr, &q, &gravity);
+        releaseI2CLock();
     }
 
     const char* getName() const override { return "MPU6050"; }

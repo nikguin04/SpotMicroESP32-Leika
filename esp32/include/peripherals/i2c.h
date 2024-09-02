@@ -21,6 +21,7 @@ class I2CSensor : public Sensor {
     const char* getName() const override { return "I2C"; }
 
     void scanI2C(uint8_t lower = 0, uint8_t higher = 127) {
+        acquireI2CLock();
         addressList.clear();
         for (uint8_t address = lower; address < higher; address++) {
             Wire.beginTransmission(address);
@@ -28,6 +29,7 @@ class I2CSensor : public Sensor {
                 addressList.emplace_back(address);
             }
         }
+        releaseI2CLock();
     }
 
     std::list<uint8_t> getAddresses() const { return addressList; }

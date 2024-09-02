@@ -11,6 +11,9 @@
 #include <peripherals/peripherals.h>
 #include <timing.h>
 
+#include <peripherals/sensor.h>
+#include <peripherals/pca9685.h>
+
 #define EVENT_SERVO_CONFIGURATION_SETTINGS "servoPWM"
 #define EVENT_SERVO_STATE "servoState"
 
@@ -46,9 +49,21 @@ class ServoController {
         _socket->emit("angles", output, String(originId).c_str());
     }
 
-    void deactivate() { _peripherals->pcaDeactivate(); }
+    void deactivate() {
+#ifdef USE_SERVO
+        if (auto pca = sensorManager.getSensor<PCA9685Sensor>()) {
+            pca->deactivate();
+        }
+#endif
+    }
 
-    void activate() { _peripherals->pcaActivate(); }
+    void activate() {
+#ifdef USE_SERVO
+        if (auto pca = sensorManager.getSensor<PCA9685Sensor>()) {
+            pca->activate();
+        }
+#endif
+    }
 
     void updateActiveState() { is_active ? activate() : deactivate(); }
 
@@ -59,16 +74,20 @@ class ServoController {
     }
 
     void updateServoState() {
-        for (int i = 0; i < 12; i++) {
-            angles[i] = lerp(angles[i], target_angles[i], 0.2);
-            float angle = dir[i] * angles[i] + center_angle_deg[i];
-            uint16_t pwm = angle * servo_conversion[i] + center[i];
-            if (pwm < 125 || pwm > 600) {
-                ESP_LOGE("ServoController", "Servo %d, Invalid PWM value %d", i, pwm);
-                continue;
+#ifdef USE_SERVO
+        if (auto pca = sensorManager.getSensor<PCA9685Sensor>()) {
+            for (int i = 0; i < 12; i++) {
+                angles[i] = lerp(angles[i], target_angles[i], 0.2);
+                float angle = dir[i] * angles[i] + center_angle_deg[i];
+                uint16_t pwm = angle * servo_conversion[i] + center[i];
+                if (pwm < 125 || pwm > 600) {
+                    ESP_LOGE("ServoController", "Servo %d, Invalid PWM value %d", i, pwm);
+                    continue;
+                }
+                pca->setPWM(i, pwm);
             }
-            _peripherals->pcaWrite(i, pwm);
         }
+#endif
     }
 
     void loop() {

@@ -35,11 +35,7 @@ void Spot::begin() {
     sensorManager.addSensor<BMP085Sensor>();
 #endif
 
-#ifdef ENABLE_PCA9685
-    sensorManager.addSensor<PCA9685Sensor>();
-#endif
-
-#ifdef ENABLE_ADS1115
+#ifdef USE_ADC
     sensorManager.addSensor<ADS1115Sensor>();
 #endif
 

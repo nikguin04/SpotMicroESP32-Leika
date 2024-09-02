@@ -23,6 +23,8 @@ class HMC5883Sensor : public Sensor {
     }
 
     void update() override {
+        if (!is_active) return;
+        acquireI2CLock();
         mag.getEvent(&event);
         heading = atan2(event.magnetic.y, event.magnetic.x);
         float declinationAngle = 0.22;
@@ -30,6 +32,7 @@ class HMC5883Sensor : public Sensor {
         if (heading < 0) heading += 2 * PI;
         if (heading > 2 * PI) heading -= 2 * PI;
         heading *= 180 / M_PI;
+        releaseI2CLock();
     }
 
     const char* getName() const override { return "HMC5883"; }
