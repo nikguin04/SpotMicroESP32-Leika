@@ -1,5 +1,7 @@
 #include <peripherals/led_service.h>
 
+#if USE_WS2812
+
 LEDService::LEDService() {
     FastLED.addLeds<CHIPSET, WS2812_PIN, COLOR_ORDER>(leds, WS2812_NUM_LEDS).setCorrection(TypicalLEDStrip);
     currentPalette = OceanColors_p;
@@ -31,3 +33,5 @@ void LEDService::fillColor(CRGB color) {
         leds[i] = color;
     }
 }
+
+#endif

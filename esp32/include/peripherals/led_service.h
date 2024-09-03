@@ -1,5 +1,6 @@
 #pragma once
 
+#if USE_WS2812
 #include <FastLED.h>
 #include <timing.h>
 #include <WiFi.h>
@@ -33,3 +34,5 @@ class LEDService {
     void begin();
     void loop();
 };
+
+#endif
