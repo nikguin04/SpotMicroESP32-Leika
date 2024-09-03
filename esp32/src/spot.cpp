@@ -4,14 +4,14 @@ TaskManager g_task_manager;
 SensorManager sensorManager;
 
 namespace spot {
+    
+NTPService ntpService;
 
 Spot::Spot(PsychicHttpServer *server)
     : _server(server),
-      _webserver(server, &_wifiService, &_apService, &_socket, &_systemService, &_ntpService, &_cameraService),
+      _webserver(server, &_wifiService, &_apService, &_socket, &_systemService, &_cameraService),
       _socket(server),
-      _ntpService(server),
-      _servoController(server, &ESPFS, &_peripherals, &_socket),
-      _peripherals(server, &_socket),
+      _servoController(server, &ESPFS, &_socket),
       _motionService(server, &_socket, &_servoController) {}
 
 Spot::~Spot() {}
@@ -24,26 +24,27 @@ void Spot::beginAsync() {
 
 void Spot::begin() {
     ESPFS.begin(true);
+    Wire.begin(SDA_PIN, SCL_PIN, I2C_FREQUENCY);
     g_task_manager.begin();
     startServices();
 
-#ifdef USE_IMU
+#if USE_IMU
     sensorManager.addSensor<MPU6050Sensor>();
 #endif
 
-#ifdef USE_BMP
+#if USE_BMP
     sensorManager.addSensor<BMP085Sensor>();
 #endif
 
-#ifdef USE_ADC
+#if USE_ADC
     sensorManager.addSensor<ADS1115Sensor>();
 #endif
 
-#ifdef USE_MAG
+#if USE_MAG
     sensorManager.addSensor<HMC5883Sensor>();
 #endif
 
-#ifdef USE_SERVO
+#if USE_SERVO
     sensorManager.addSensor<PCA9685Sensor>();
 #endif
 
@@ -56,13 +57,16 @@ void Spot::startServices() {
     _wifiService.begin();
     _wifiService.setupMDNS(name);
     _apService.begin();
-    _ntpService.begin();
+    #if USE_NTP
+    ntpService.begin();
+    #endif
     _cameraService.begin();
     _socket.begin();
     _webserver.begin();
+    #if USE_WS2812
     _ledService.begin();
+    #endif
     _motionService.begin();
-    _peripherals.begin();
     _servoController.begin();
 }
 
@@ -77,7 +81,9 @@ void IRAM_ATTR Spot::loop() {
     _webserver.loop();
     _wifiService.loop();
     _apService.loop();
+    #if USE_WS2812
     _ledService.loop();
+    #endif
 }
 
 } // namespace spot

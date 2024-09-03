@@ -24,7 +24,6 @@ class WebServer {
     FeaturesService _featureService;
     SystemService *_systemService;
     FileSystemService _fileSystemService;
-    NTPService *_ntpService;
     WiFiService *_wifiService;
     APService *_apService;
     EventSocket *_socket;
@@ -46,7 +45,7 @@ class WebServer {
 
   public:
     WebServer(PsychicHttpServer *server, WiFiService *wifiService, APService *apService, EventSocket *socket,
-              SystemService *systemService, NTPService *ntpService, camera::CameraService *cameraService);
+              SystemService *systemService, camera::CameraService *cameraService);
     ~WebServer();
 
     void begin();

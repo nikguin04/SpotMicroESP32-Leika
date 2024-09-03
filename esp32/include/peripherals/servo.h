@@ -8,7 +8,6 @@
 #include <domain/stateful_service_persistence.h>
 #include <domain/stateful_service_endpoint.h>
 #include <utilities/math_utilities.h>
-#include <peripherals/peripherals.h>
 #include <timing.h>
 
 #include <peripherals/sensor.h>
@@ -19,8 +18,8 @@
 
 class ServoController {
   public:
-    ServoController(PsychicHttpServer *server, FS *fs, Peripherals *peripherals, EventSocket *socket)
-        : _server(server), _peripherals(peripherals), _socket(socket) {}
+    ServoController(PsychicHttpServer *server, FS *fs, EventSocket *socket)
+        : _server(server), _socket(socket) {}
 
     void begin() {
         _socket->onEvent(EVENT_SERVO_CONFIGURATION_SETTINGS,
@@ -50,7 +49,7 @@ class ServoController {
     }
 
     void deactivate() {
-#ifdef USE_SERVO
+#if USE_SERVO
         if (auto pca = sensorManager.getSensor<PCA9685Sensor>()) {
             pca->deactivate();
         }
@@ -58,7 +57,7 @@ class ServoController {
     }
 
     void activate() {
-#ifdef USE_SERVO
+#if USE_SERVO
         if (auto pca = sensorManager.getSensor<PCA9685Sensor>()) {
             pca->activate();
         }
@@ -74,7 +73,7 @@ class ServoController {
     }
 
     void updateServoState() {
-#ifdef USE_SERVO
+#if USE_SERVO
         if (auto pca = sensorManager.getSensor<PCA9685Sensor>()) {
             for (int i = 0; i < 12; i++) {
                 angles[i] = lerp(angles[i], target_angles[i], 0.2);
@@ -96,7 +95,6 @@ class ServoController {
 
   private:
     PsychicHttpServer *_server;
-    Peripherals *_peripherals;
     EventSocket *_socket;
 
     bool is_active {true};

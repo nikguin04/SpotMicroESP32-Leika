@@ -1,12 +1,9 @@
 #include <services/ntp/ntp_service.h>
 
-NTPService::NTPService(PsychicHttpServer *server)
+NTPService::NTPService()
     : endpoint(NTPSettings::read, NTPSettings::update, this),
       _fsPersistence(NTPSettings::read, NTPSettings::update, this, &ESPFS, NTP_SETTINGS_FILE) {
     addUpdateHandler([&](const String &originId) { configureNTP(); }, false);
-}
-
-void NTPService::begin() {
     WiFi.onEvent(std::bind(&NTPService::onStationModeDisconnected, this, std::placeholders::_1, std::placeholders::_2),
                  WiFiEvent_t::ARDUINO_EVENT_WIFI_STA_DISCONNECTED);
     WiFi.onEvent(std::bind(&NTPService::onStationModeGotIP, this, std::placeholders::_1, std::placeholders::_2),
@@ -14,6 +11,9 @@ void NTPService::begin() {
 
     _fsPersistence.readFromFS();
     configureNTP();
+}
+
+void NTPService::begin() {
 }
 
 void NTPService::onStationModeGotIP(WiFiEvent_t event, WiFiEventInfo_t info) { configureNTP(); }
@@ -71,3 +71,5 @@ String NTPService::formatTime(tm *time, const char *format) {
 String NTPService::toUTCTimeString(tm *time) { return formatTime(time, "%FT%TZ"); }
 
 String NTPService::toLocalTimeString(tm *time) { return formatTime(time, "%FT%T"); }
+
+NTPService ntpService;

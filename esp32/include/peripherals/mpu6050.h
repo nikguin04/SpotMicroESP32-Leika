@@ -4,7 +4,7 @@
 
 #include <MPU6050_6Axis_MotionApps612.h>
 
-#ifdef USE_IMU
+#if USE_IMU
 class MPU6050Sensor : public Sensor {
   private:
     MPU6050 mpu;

@@ -34,3 +34,16 @@
 #define ARDUINO_VERSION \
     ARDUINO_VERSION_STR(ESP_ARDUINO_VERSION_MAJOR, ESP_ARDUINO_VERSION_MINOR, ESP_ARDUINO_VERSION_PATCH)
 #endif
+
+/*
+ * I2C software connection
+ */
+#ifndef SDA_PIN
+#define SDA_PIN SDA
+#endif
+#ifndef SCL_PIN
+#define SCL_PIN SCL
+#endif
+#ifndef I2C_FREQUENCY
+#define I2C_FREQUENCY 100000UL
+#endif

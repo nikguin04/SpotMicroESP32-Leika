@@ -12,7 +12,7 @@
 
 class NTPService : public StatefulService<NTPSettings> {
   public:
-    NTPService(PsychicHttpServer *server);
+    NTPService();
 
     void begin();
 
@@ -22,7 +22,6 @@ class NTPService : public StatefulService<NTPSettings> {
     HttpEndpoint<NTPSettings> endpoint;
 
   private:
-    PsychicHttpServer *_server;
     FSPersistence<NTPSettings> _fsPersistence;
 
     void onStationModeGotIP(WiFiEvent_t event, WiFiEventInfo_t info);
@@ -35,5 +34,7 @@ class NTPService : public StatefulService<NTPSettings> {
     static String toUTCTimeString(tm *time);
     static String toLocalTimeString(tm *time);
 };
+
+extern NTPService ntpService;
 
 #endif // end NTPSettingsService_h

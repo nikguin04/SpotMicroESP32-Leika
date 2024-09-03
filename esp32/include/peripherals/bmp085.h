@@ -4,7 +4,7 @@
 #include <Adafruit_Sensor.h>
 #include <Adafruit_BMP085_U.h>
 
-#ifdef USE_BMP
+#if USE_BMP
 class BMP085Sensor : public Sensor {
   private:
     Adafruit_BMP085_Unified bmp;

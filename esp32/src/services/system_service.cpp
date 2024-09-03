@@ -16,10 +16,12 @@ esp_err_t SystemService::handleRestart(PsychicRequest *request) {
     return request->reply(200);
 }
 
+#if USE_SLEEP
 esp_err_t SystemService::handleSleep(PsychicRequest *request) {
     sleep();
     return request->reply(200);
 }
+#endif
 
 esp_err_t SystemService::getStatus(PsychicRequest *request) {
     PsychicJsonResponse response = PsychicJsonResponse(request, false);
@@ -62,6 +64,7 @@ void SystemService::restart() {
         "Restart task", 4096, nullptr, 10);
 }
 
+#if USE_SLEEP
 void SystemService::sleep() {
     g_task_manager.createTask(
         [](void *pvParameters) {
@@ -77,6 +80,7 @@ void SystemService::sleep() {
         "Sleep task", 4096, nullptr, 10);
     ESP_LOGI(TAG, "Setting device to sleep");
 }
+#endif
 
 void SystemService::status(JsonObject &root) {
     root["esp_platform"] = ESP_PLATFORM;

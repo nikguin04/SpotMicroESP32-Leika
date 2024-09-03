@@ -5,13 +5,12 @@ static const char *TAG = "WebServer";
 namespace spot {
 
 WebServer::WebServer(PsychicHttpServer *server, WiFiService *wifiService, APService *apService, EventSocket *socket,
-                     SystemService *systemService, NTPService *ntpService, camera::CameraService *cameraService)
+                     SystemService *systemService, camera::CameraService *cameraService)
     : _server(server),
       _wifiService(wifiService),
       _apService(apService),
       _socket(socket),
       _systemService(systemService),
-      _ntpService(ntpService),
       _cameraService(cameraService) {}
 
 WebServer::~WebServer() {}
@@ -52,18 +51,22 @@ void WebServer::begin() {
     // System
     _server->on("/api/system/reset", HTTP_POST, _systemService->handleReset);
     _server->on("/api/system/restart", HTTP_POST, _systemService->handleRestart);
+    #if USE_SLEEP
     _server->on("/api/system/sleep", HTTP_POST, _systemService->handleSleep);
+    #endif
     _server->on("/api/system/status", HTTP_GET, _systemService->getStatus);
     _server->on("/api/system/metrics", HTTP_GET, _systemService->getMetrics);
 
     // NTP
-    _server->on("/api/ntp/time", HTTP_POST, _ntpService->handleTime);
-    _server->on("/api/ntp/status", HTTP_GET, _ntpService->getNTPStatus);
+    #if USE_NTP
+    _server->on("/api/ntp/time", HTTP_POST, ntpService.handleTime);
+    _server->on("/api/ntp/status", HTTP_GET, ntpService.getNTPStatus);
     _server->on("/api/ntp/settings", HTTP_GET,
-                [this](PsychicRequest *request) { return _ntpService->endpoint.getState(request); });
+                [this](PsychicRequest *request) { return ntpService.endpoint.getState(request); });
     _server->on("/api/ntp/settings", HTTP_POST, [this](PsychicRequest *request, JsonVariant &json) {
-        return _ntpService->endpoint.handleStateUpdate(request, json);
+        return ntpService.endpoint.handleStateUpdate(request, json);
     });
+    #endif
 
     // Camera
     _server->on("/api/camera/still", HTTP_GET, _cameraService->still);
@@ -123,7 +126,7 @@ void WebServer::begin() {
 }
 
 void WebServer::addHeaders() {
-#ifdef ENABLE_CORS
+#if ENABLE_CORS
     DefaultHeaders::Instance().addHeader("Access-Control-Allow-Origin", CORS_ORIGIN);
     DefaultHeaders::Instance().addHeader("Access-Control-Allow-Headers", "Accept, Content-Type, Authorization");
     DefaultHeaders::Instance().addHeader("Access-Control-Allow-Credentials", "true");
@@ -157,19 +160,19 @@ void WebServer::emitIMU() {
     if (!_socket->hasSubscribers("imu")) return;
     doc.clear();
     JsonObject root = doc.to<JsonObject>();
-#ifdef USE_IMU
+#if USE_IMU
     if (auto mpu6050 = sensorManager.getSensor<MPU6050Sensor>()) {
         mpu6050->update();
         mpu6050->populateJson(root);
     }
 #endif
-#ifdef USE_BMP
+#if USE_BMP
     if (auto bmp085 = sensorManager.getSensor<BMP085Sensor>()) {
         bmp085->update();
         bmp085->populateJson(root);
     }
 #endif
-#ifdef USE_MAG
+#if USE_MAG
     if (auto hmc5883 = sensorManager.getSensor<HMC5883Sensor>()) {
         hmc5883->update();
         hmc5883->populateJson(root);

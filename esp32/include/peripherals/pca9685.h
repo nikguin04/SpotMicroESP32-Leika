@@ -15,7 +15,7 @@
 #define FACTORY_SERVO_OSCILLATOR_FREQUENCY 27000000
 #endif
 
-#ifdef USE_SERVO
+#if USE_SERVO
 class PCA9685Sensor : public Sensor {
   private:
     Adafruit_PWMServoDriver pwm;

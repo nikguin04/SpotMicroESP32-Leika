@@ -4,7 +4,7 @@
 #include <Adafruit_Sensor.h>
 #include <Adafruit_HMC5883_U.h>
 
-#ifdef USE_BMP
+#if USE_MAG
 class HMC5883Sensor : public Sensor {
   private:
     Adafruit_HMC5883_Unified mag;

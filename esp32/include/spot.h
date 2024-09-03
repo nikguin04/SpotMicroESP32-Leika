@@ -2,6 +2,8 @@
 #define Spot_h
 
 #include <Arduino.h>
+#include <SPI.h>
+#include <Wire.h>
 
 #include <features.h>
 #include <webserver.h>
@@ -10,7 +12,6 @@
 #include <event_socket.h>
 
 #include <peripherals/led_service.h>
-#include <peripherals/peripherals.h>
 #include <peripherals/servo.h>
 
 #include <peripherals/sensor.h>
@@ -31,13 +32,13 @@ class Spot {
     WiFiService _wifiService;
     APService _apService;
     SystemService _systemService;
-    NTPService _ntpService;
     camera::CameraService _cameraService;
+    #if USE_WS2812
     LEDService _ledService;
+    #endif
     MotionService _motionService;
     EventSocket _socket;
     ServoController _servoController;
-    Peripherals _peripherals;
 
     const char *name = "spot-micro";
 
