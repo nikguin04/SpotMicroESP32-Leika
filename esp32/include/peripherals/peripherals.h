@@ -61,7 +61,7 @@ class Peripherals : public StatefulService<PeripheralsConfiguration> {
 
         updatePins();
 
-#if FT_ENABLED(USE_MPU6050 || USE_BNO055)
+#if FT_ENABLED(USE_MPU6050 || USE_BNO055 || USE_ICM20948)
         if (!_imu.initialize()) ESP_LOGE("IMUService", "IMU initialize failed");
 #endif
 #if FT_ENABLED(USE_HMC5883)
@@ -131,7 +131,7 @@ class Peripherals : public StatefulService<PeripheralsConfiguration> {
     /* IMU FUNCTIONS */
     bool readIMU() {
         bool updated = false;
-#if FT_ENABLED(USE_MPU6050 || USE_BNO055)
+#if FT_ENABLED(USE_MPU6050 || USE_BNO055 || USE_ICM20948)
         beginTransaction();
         updated = _imu.readIMU();
         endTransaction();
@@ -179,7 +179,7 @@ class Peripherals : public StatefulService<PeripheralsConfiguration> {
 
     float angleX() {
         return
-#if FT_ENABLED(USE_MPU6050 || USE_BNO055)
+#if FT_ENABLED(USE_MPU6050 || USE_BNO055 || USE_ICM20948)
             _imu.getAngleX();
 #else
             0;
@@ -188,7 +188,7 @@ class Peripherals : public StatefulService<PeripheralsConfiguration> {
 
     float angleY() {
         return
-#if FT_ENABLED(USE_MPU6050 || USE_BNO055)
+#if FT_ENABLED(USE_MPU6050 || USE_BNO055 || USE_ICM20948)
             _imu.getAngleY();
 #else
             0;
@@ -214,7 +214,7 @@ class Peripherals : public StatefulService<PeripheralsConfiguration> {
     void emitIMU() {
         doc.clear();
         JsonObject root = doc.to<JsonObject>();
-#if FT_ENABLED(USE_MPU6050 || USE_BNO055)
+#if FT_ENABLED(USE_MPU6050 || USE_BNO055 || USE_ICM20948)
         _imu.readIMU(root);
 #endif
 #if FT_ENABLED(USE_HMC5883)
@@ -223,7 +223,7 @@ class Peripherals : public StatefulService<PeripheralsConfiguration> {
 #if FT_ENABLED(USE_BMP180)
         _bmp.readBarometer(root);
 #endif
-#if FT_ENABLED(USE_MPU6050 || USE_BNO055) || FT_ENABLED(USE_HMC5883)
+#if FT_ENABLED(USE_MPU6050 || USE_BNO055 || USE_ICM20948) || FT_ENABLED(USE_HMC5883)
         JsonVariant data = doc.as<JsonVariant>();
         socket.emit(EVENT_IMU, data);
 #endif
@@ -250,7 +250,7 @@ class Peripherals : public StatefulService<PeripheralsConfiguration> {
 
     JsonDocument doc;
     char message[MAX_ESP_IMU_SIZE];
-#if FT_ENABLED(USE_MPU6050 || USE_BNO055)
+#if FT_ENABLED(USE_MPU6050 || USE_BNO055 || USE_ICM20948)
     IMU _imu;
 #endif
 #if FT_ENABLED(USE_HMC5883)

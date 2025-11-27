@@ -6,7 +6,7 @@
 #include <PsychicHttp.h>
 
 #define FT_ENABLED(feature) feature
-
+  
 // upload firmware feature off by default
 #ifndef USE_UPLOAD_FIRMWARE
 #define USE_UPLOAD_FIRMWARE 0
@@ -27,9 +27,17 @@
 #define USE_CAMERA 0
 #endif
 
-// ESP32 IMU on by default
+// ESP32 IMU off by default
 #ifndef USE_MPU6050
 #define USE_MPU6050 0
+#endif
+
+// ESP32 IMU off by default
+#ifndef USE_ICM20948
+#define USE_ICM20948 0
+#endif
+#ifndef USE_ICM20948_SPIMODE // I2C on by default
+#define USE_ICM20948_SPIMODE 0
 #endif
 
 // ESP32 IMU on by default

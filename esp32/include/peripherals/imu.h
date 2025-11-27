@@ -10,9 +10,15 @@
 #include <MPU6050_6Axis_MotionApps612.h>
 #endif
 
+#if FT_ENABLED(USE_ICM20948)
+#include "ICM_20948.h" 
+#endif
+
 #if FT_ENABLED(USE_BNO055)
 #include <Adafruit_BNO055.h>
 #endif
+
+
 
 struct IMUAnglesMsg {
     float rpy[3] {0, 0, 0};
@@ -70,6 +76,26 @@ class IMU {
         }
         _imu.setExtCrystalUse(true);
 #endif
+#if FT_ENABLED(USE_ICM20948)
+    #if USE_ICM20948_SPIMODE > 0
+        _imu.begin(CS_PIN, SPI_PORT);
+    #else
+        _imu.begin(Wire, 1);
+    #endif
+    if (_imu.status != ICM_20948_Stat_Ok){ return false; }
+    
+    _imu.setSampleMode((ICM_20948_Internal_Acc | ICM_20948_Internal_Gyr), ICM_20948_Sample_Mode_Continuous);
+    if (_imu.status != ICM_20948_Stat_Ok){ return false; }
+    
+    ICM_20948_fss_t myFSS;
+    myFSS.a = gpm2;
+    myFSS.g = dps250;
+    _imu.setFullScale((ICM_20948_Internal_Acc | ICM_20948_Internal_Gyr), myFSS);
+    if (_imu.status != ICM_20948_Stat_Ok){ return false; }
+    // TODO: Setup low pass filter config
+    _imu.startupMagnetometer();
+    if (_imu.status != ICM_20948_Stat_Ok){ return false; }
+#endif
         return true;
     }
 
@@ -92,6 +118,15 @@ class IMU {
         imuMsg.rpy[0] = event.orientation.x;
         imuMsg.rpy[1] = event.orientation.y;
         imuMsg.rpy[2] = event.orientation.z;
+#endif
+#if FT_ENABLED(USE_ICM20948)
+        if (_imu.dataReady())
+        {
+            _imu.getAGMT();
+            imuMsg.rpy[0] = _imu.magX();
+            imuMsg.rpy[1] = _imu.magY();
+            imuMsg.rpy[2] = _imu.magZ();
+        }
 #endif
         return true;
     }
@@ -125,6 +160,16 @@ class IMU {
 #endif
 #if FT_ENABLED(USE_BNO055)
     Adafruit_BNO055 _imu;
+#endif
+#if FT_ENABLED(USE_ICM20948)
+    #if FT_ENABLED(USE_ICM20948_SPIMODE) > 0
+        #define SPI_PORT SPI // TODO in periphearals_seetings.h
+        #define CS_PIN 2 
+        ICM_20948_SPI _imu;
+    #else
+        //#define WIRE_PORT Wire 
+        ICM_20948_I2C _imu;
+    #endif
 #endif
     IMUAnglesMsg imuMsg;
 };
